@@ -1,0 +1,519 @@
+\documentclass{beamer}
+\usefonttheme[onlymath]{serif}
+\usepackage{ragged2e}
+\justifying
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{color}
+\usepackage[formats]{listings}
+\usepackage{multicol}
+
+\usetheme{Madrid}
+% Berkeley
+% Boadilla
+% Madrid
+% Montpellier
+
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{frametitle}{fg=white}
+\setbeamercolor{structure}{fg=myblue}
+
+\makeatletter
+\renewcommand{\itemize}[1][]{%
+  \beamer@ifempty{#1}{}{\def\beamer@defaultospec{#1}}%
+  \ifnum \@itemdepth >2\relax\@toodeep\else
+    \advance\@itemdepth\@ne
+    \beamer@computepref\@itemdepth% sets \beameritemnestingprefix
+    \usebeamerfont{itemize/enumerate \beameritemnestingprefix body}%
+    \usebeamercolor[fg]{itemize/enumerate \beameritemnestingprefix body}%
+    \usebeamertemplate{itemize/enumerate \beameritemnestingprefix body begin}%
+    \list
+      {\usebeamertemplate{itemize \beameritemnestingprefix item}}
+      {\def\makelabel##1{%
+          {%
+            \hss\llap{{%
+                \usebeamerfont*{itemize \beameritemnestingprefix item}%
+                \usebeamercolor[fg]{itemize \beameritemnestingprefix item}##1}}%
+          }%
+        }%
+      }
+  \fi%
+  \beamer@cramped%
+  \justifying%
+  \beamer@firstlineitemizeunskip%
+}
+\makeatother
+\usepackage{amsmath}
+
+%----------------------------------- Setup
+\title[Serial, P. Analógicas, Bibliotecas e Motores]{Aula 02 - SEEL 2019 \\Minicurso de Arduino \\Comunicação Serial, Portas Analógicas, Bibliotecas e Motores}
+\author[Adriano]{Adriano Rodrigues}
+\date{24 de outubro de 2019}
+
+\definecolor{mygreen}{rgb}{0.6,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{myorange}{rgb}{0.8,0.4,0}
+\definecolor{myorange}{rgb}{0.8,0.4,0}
+\definecolor{mywhite}{rgb}{0.98,0.98,0.98}
+\definecolor{myblue}{rgb}{0,0.6,0.6}
+
+\lstdefineformat{C}
+{
+  \{=\newline\string\newline\indent,%
+  \}=\newline\noindent\string,%
+  ;=[\ ]\string\space,%
+}
+
+\lstset{%
+  format = C,
+  backgroundcolor=\color{mywhite},
+  basicstyle=\footnotesize\ttfamily,
+  breakatwhitespace=false,
+  breaklines=true,
+  captionpos=b,
+  columns=flexible,
+  commentstyle=\color{mygray},
+  deletekeywords={...},
+  escapeinside={\%*}{*)},
+  extendedchars=true,
+  frame=shadowbox,
+  keepspaces=true,
+  keywordstyle=\color{myorange},
+  keywordstyle=[2]\color{mygreen},
+  language=C,
+  morekeywords={*,...},
+  numbers=left,
+  numbersep=4pt,
+  numberstyle=\tiny\color{black},
+  rulecolor=\color{black},
+  rulesepcolor=\color{myblue},
+  showspaces=false,
+  showstringspaces=false,          
+  showtabs=false,
+  stepnumber=1,
+  stringstyle=\color{myorange},
+  tabsize=1,
+  title=\lstname,
+  emphstyle=\bfseries\color{myblue},%  style for emph={}
+}    
+
+%% language specific settings:
+\lstdefinestyle{Arduino}{%
+    keywords={digitalWrite,delay,Serial,begin,println,print,
+    available,millis,micros,parseInt,round,digitalRead,digitalWrite,
+    analogRead,analogWrite,pinMode
+    },%                 define keywords
+    keywords=[2]{if,else,for,while,setup,loop},
+    morecomment=[l]{//},%             treat // as comments
+    morecomment=[s]{/*}{*/},%         define /* ... */ comments
+    morecomment=[s]{//}{.},%         define // ... . comments
+    emph={void,int,float,unsigned,boolean,long,HIGH,OUTPUT,LOW},%        keywords to emphasize
+}
+
+\newtoggle{InString}{}% Keep track of if we are within a string
+\togglefalse{InString}% Assume not initally in string
+
+\begin{document}
+
+%----------------------------------- Cover
+\begin{frame}
+	\titlepage
+\end{frame}
+
+%----------------------------------- Conteúdo
+\section{Conteúdo}
+\begin{frame}
+\frametitle{Aula 02}
+	\begin{itemize}
+		\item Comunicação Serial;
+		\item Sinais Analógicos:
+		\begin{itemize}
+			\item Entradas Analógicas;
+			\item ``Saídas" Analógicas (PWM).
+		\end{itemize}
+		\item Motor CC;
+		\item Bibliotecas;
+		\item Servo Motor.
+	\end{itemize}
+\end{frame}
+
+%---------------------------------- Índice
+\section{Índice}
+\begin{frame}
+\frametitle{Índice}
+\begin{multicols}{2}
+\tableofcontents
+\end{multicols}
+\end{frame}
+
+%----------------------------------- Comunicação Serial
+\section{Comunicação Serial}
+\begin{frame}[fragile]
+	\frametitle{Comunicação Serial}
+	\begin{center}
+		\pgfimage[height=180pt]{figs/figSerial}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]
+	\frametitle{Comunicação Serial}
+	Setup():
+	\begin{itemize}
+		\item Serial.begin(\textit{baudrate})
+		\textit{baudrate} = int 300, 600, 1200, 2400, 4800, \textbf{9600}, 14400, 19200, 28800, 38400, 56700, 115200.
+	\end{itemize}
+	Loop():
+	\begin{itemize}
+		\item Serial.print(\textit{texto}); $\rightarrow$ \textit{texto} = string ou char.
+		\item Serial.println(\textit{texto}); $\rightarrow$ Imprime e pula uma linha.
+		\item Uma string pode ser escrita diretamente entre aspas (``exemplo") e um caractere entre aspas simples (`a').
+		\item Serial.available();  $\rightarrow$ Retorna a quantidade de bytes a serem lidos.
+		\item Serial.read(); $\rightarrow$ Retorna o byte ou caractere lido na pilha.
+		\item Serial.parseInt(); $\rightarrow$ Retorna número inteiro lido na serial.
+		\item atoi(\textit{string}); $\rightarrow$ Retorna um número inteiro.\\ Exemplo \textit{int} val = atoi(``12345") $\rightarrow$ val = 12345.
+	\end{itemize}
+\end{frame}
+
+%----------------------------------- Exercício 01
+\section{Exercício 01}
+\begin{frame}[fragile]
+	\frametitle{Exercício 01 - Comunicação Serial de Inteiros}
+	
+	\begin{lstlisting}[style=Arduino]
+	// Comunicacao Serial de Inteiros - Adriano Rodrigues.
+	int buf = 0;
+	void setup() // Sempre utilizar Serial begin no setup.{
+	Serial.begin(9600);// Configura Serial para 9600 de baud rate.}
+	void loop()	{
+	if (Serial.available()>0)	{
+	buf = Serial.parseInt(); // Interpreta o dado lido como int.
+	Serial.println(buf*2)  ; // Imprime BUF multiplicado por 2. } } 	\end{lstlisting}
+\end{frame}
+
+%----------------------------------- Analógico vs Digital
+\section{Analógico vs Digital}
+\begin{frame}
+	\frametitle{Analógico \textit{vs} Digital}
+	\begin{center}
+		\pgfimage[height=180pt]{figs/figAd01.jpg}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Analógico \textit{vs} Digital}
+	\begin{center}
+		\pgfimage[height=150pt]{figs/figAd02.jpeg}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Analógico \textit{vs} Digital}
+	\begin{center}
+		\pgfimage[height=180pt]{figs/figAd03.jpg}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Analógico \textit{vs} Digital}
+	\begin{center}
+		\pgfimage[height=130pt]{figs/figAd04.jpg}
+	\end{center}
+\end{frame}
+
+%----------------------------------- Funções Analógicas pt1
+\section{Funções Analógicas pt1}
+\begin{frame}
+	\frametitle{Funções Analógicas parte 1}
+	Leitura Analógica:
+	\begin{itemize}
+		\item analogRead(\textit{pino});\\
+		pino = int de 0 a 5, retorna de 0 a 1023.
+	\end{itemize}
+	Escrita Analógica:
+	\begin{itemize}
+		\item Infelizmente o Arduino Uno não conta com essa função. Ao menos não exatamente...
+	\end{itemize}
+\end{frame}
+
+%----------------------------------- Exercício 02
+\section{Exercício 02}
+\begin{frame}[fragile]
+	\frametitle{Exercício 02 - Frequência Modificada por Entrada Analógica}
+	
+	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
+// Frequencia do LED + Porta analogica - Adriano Rodrigues.
+
+int     led     = 13  ; // Porta do LED.
+int     periodo = 0   ; // Valor do period.
+boolean estado  = true; // Estado do led.
+
+void setup()
+{
+pinMode(led, OUTPUT); // Configura a porta digital ligada ao LED.
+}
+
+void loop()
+{
+estado  = !estado       ; // Alterna o valor do estado.
+periodo = analogRead(0) ; // Le o valor do potenciometro.
+digitalWrite(led,estado);
+delay(periodo/2)        ; // Periodo determinado pela leitura analogica.
+}	\end{lstlisting}
+\end{frame}
+
+%----------------------------------- Potenciômetro
+\section{Potenciômetro}
+\begin{frame}
+	\frametitle{Potenciômetro}
+		\pgfimage[height=200pt]{figs/figPot} \hspace{0pt}
+		\pgfimage[height=110pt]{figs/figPot2}
+\end{frame}
+
+%----------------------------------- PWM
+\section{PWM}
+\begin{frame}
+	\frametitle{PWM - \textit{Pulse Width Modulation} - Modulação por Largura de Pulso}
+	\begin{center}
+		\pgfimage[height=180pt]{figs/figPwm.png}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{PWM - \textit{Pulse Width Modulation} - Modulação por Largura de Pulso}
+	\begin{center}
+		\pgfimage[height=180pt]{figs/figPwm2.png}
+	\end{center}
+\end{frame}
+
+%----------------------------------- Funções Analógicas pt2
+\section{Funções Analógicas pt2}
+\begin{frame}
+	\frametitle{Funções Analógicas parte 2}
+	Leitura Analógica:
+	\begin{itemize}
+		\item analogRead(\textit{pino});\\
+		pino = int de 0 a 5, retorna de 0 a 1023.
+	\end{itemize}
+	Escrever PWM:
+	\begin{itemize}
+		\item analogWrite(\textit{pino}, \textit{valor});\\
+		pino = pinos digitais com '$\sim$'.
+		valor =  int de 0 a 255.\\
+		\textbf{É necessário definir o pino como saída!}
+	\end{itemize}
+\end{frame}
+
+%----------------------------------- Exercício 03
+\section{Exercício 03}
+\begin{frame}[fragile]
+	\frametitle{Exercício 03 - Brilho do LED via PWM \\ Com LED \textbf{EXTERNO}!}
+	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
+// Brilho Variavel do LED via PWM - Adriano Rodrigues.
+// Porta do LED.
+int led = 11; // Deve ser uma porta PWM.
+int buf = 0 ;
+void setup()
+{
+Serial.begin(9600); pinMode(led, OUTPUT);
+}
+void loop()
+{
+if (Serial.available()>0)
+{
+buf = Serial.parseInt(); // Interpreta o dado lido como um int.
+}
+analogWrite(led,buf);
+delay(100);
+}	\end{lstlisting}
+\end{frame}
+
+%----------------------------------- Tarefa 01
+\section{Tarefa 01}
+\begin{frame}
+	\frametitle{Tarefa 01 - Brilho Variável do LED via PWM\\Com LED \textbf{EXTERNO}!}
+	Fazer o brilho do LED aumentar com o tempo.\\[5pt]
+	Quando chegar ao brilho máximo, a sequência deve ser recomeçada.
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Tarefa 01 - Brilho Variável do LED via PWM\\Com LED \textbf{EXTERNO}!}
+	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
+// Brilho Variavel do LED via PWM - Adriano Rodrigues.
+
+// Porta do LED.
+int led = 11; // Deve ser uma porta PWM.
+
+void setup()
+{
+// Configuracao da porta digital do LED.
+pinMode(led, OUTPUT);
+}
+
+void loop()
+{
+for(int i = 0; i < 255; i++)
+{
+analogWrite(led,i);
+delay(10)         ;
+}
+}	\end{lstlisting}
+\end{frame}
+
+%----------------------------------- Acionamento dos Motores
+\section{Acionamento dos Motores}
+\begin{frame}
+	\frametitle{Acionamento dos Motores}
+	\begin{center}
+		\pgfimage[height=100pt]{figs/figTip31.jpg} \hspace{15pt}
+		\pgfimage[height=180pt]{figs/figDriver.jpg}
+	\end{center}
+\end{frame}
+
+%----------------------------------- Exercício 04
+\section{Exercício 04}
+\begin{frame}[fragile]
+	\frametitle{Exercício 04 - Motor DC}
+	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
+// Velocidade do Motor - Adriano Rodrigues.
+int comando = 200; // Ciclo de trabalho = 200/255.
+int port_motor = 3;
+
+void setup()
+{
+pinMode(port_motor,OUTPUT); // Definir como saida.
+}
+
+void loop()
+{
+analogWrite(port_motor,comando); // Escreve em PWM.
+delay(100);
+}	\end{lstlisting}
+\end{frame}
+
+%----------------------------------- Tarefa 02
+\section{Tarefa 02}
+\begin{frame}
+	\frametitle{Tarefa 02 - Motor DC com Controle Externo}
+	Controlar a velocidade de um motor manualmente por meio da leitura da tensão de um potênciômetro.
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Tarefa 02 - Motor DC com Controle Externo}
+	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
+// Velocidade do Motor com Potenciometro - Adriano Rodrigues.
+int regulacao, comando, port_motor = 3;
+
+void setup()
+{
+pinMode(port_motor,OUTPUT); // Definir como saida.
+}
+
+void loop()
+{
+regulacao = analogRead(A2)     ; // Potenciometro.
+comando   = regulacao / 4      ; // Mapeia 0-1023 para 0-255.
+analogWrite(port_motor,comando); // Escreve em PWM.
+delay(100);
+}	\end{lstlisting}
+\end{frame}
+
+%----------------------------------- Servomotores
+\section{Servomotores}
+\begin{frame}
+	\frametitle{Servomotores}
+	\begin{center}
+		\pgfimage[height=180pt]{figs/figServo}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Servomotores}
+	\begin{center}
+		\pgfimage[height=180pt]{figs/figServoSignal.jpg}
+	\end{center}
+\end{frame}
+
+%----------------------------------- Bibliotecas
+\section{Bibliotecas}
+\begin{frame}
+	\frametitle{Bibliotecas}
+	\#include$<$\textit{biblioteca.h}$>$
+	\begin{itemize}
+	\item \#include$<$\textit{Servo.h}$>$
+	\item \#include$<$\textit{Wire.h}$>$
+	\item \#include$<$\textit{Mouse.h}$>$
+	\item \#include$<$\textit{Keyboard.h}$>$
+	\item \#include$<$\textit{Stepper.h}$>$
+	\item \#include$<$\textit{dht.h}$>$
+	\end{itemize}
+\end{frame}
+
+%----------------------------------- Exercício 05
+\section{Exercício 05}
+\begin{frame}[fragile]
+	\frametitle{Exercício 05 - Servo + Biblioteca}
+	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
+#include <Servo.h> // Adiciona a biblioteca de servos.
+Servo servo1; // Cria uma variavel servo1 na classe Servo.
+int pos = 0 ; // Posicao em graus.
+void setup()
+{
+servo1.attach(13); // Anexa o servo a porta 13.
+}
+void loop()
+{
+for (pos = 0; pos <= 180; pos += 1) // Incrementa o angulo.
+{
+servo1.write(pos); // Escreve o angulo desejado no servo.
+delay(15);
+}
+for (pos = 180; pos >= 0; pos -= 1) // Decrementa o angulo.
+{
+servo1.write(pos); // Escreve o angulo desejado no servo.
+delay(15);
+}
+}	\end{lstlisting}
+\end{frame}
+
+%----------------------------------- Tarefa 03
+\section{Tarefa 03}
+\begin{frame}
+	\frametitle{Tarefa 03 - Controlar Ângulo do Servo por Serial}
+	Controlar o ângulo de um motor por meio de comunicação serial.
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Tarefa 03 - Controlar Ângulo do Servo por Serial}
+	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
+// Controlar Angulo do Servo por Serial - Adriano Rodrigues.
+#include <Servo.h> // Adiciona a biblioteca de servos.
+
+Servo servo1; // Cria uma variavel servo1 na classe Servo.
+
+int pos = 0 ; // Posicao em graus.
+
+void setup()
+{
+Serial.begin(9600);
+servo1.attach(13); // Anexa o servo a porta 13.
+}
+void loop()
+{
+if (Serial.available() > 0)
+{
+pos = Serial.parseInt(); // Interpreta o dado lido como um int.
+}
+servo1.write(pos);
+delay(50);
+}	\end{lstlisting}
+\end{frame}
+
+%----------------------------------- Fim!
+\section{Fim!}
+\begin{frame}
+	\frametitle{Até a próxima aula!}
+	\titlepage
+\end{frame}
+	
+\end{document}

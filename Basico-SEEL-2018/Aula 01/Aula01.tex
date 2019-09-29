@@ -1,0 +1,726 @@
+\documentclass{beamer}
+\usefonttheme[onlymath]{serif}
+\usepackage{ragged2e}
+\justifying
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{color}
+\usepackage[formats]{listings}
+\usepackage{multicol}
+
+\usetheme{Madrid}
+% Berkeley
+% Boadilla
+% Madrid (*)
+% Montpellier
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{frametitle}{fg=white}
+\setbeamercolor{structure}{fg=myblue}
+
+\setbeamertemplate{frametitle}{%
+    \nointerlineskip%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=2.0ex,dp=0.6ex]{frametitle}
+        \hspace*{1ex}\insertframetitle%
+    \end{beamercolorbox}%
+}
+
+\makeatletter
+\renewcommand{\itemize}[1][]{%
+  \beamer@ifempty{#1}{}{\def\beamer@defaultospec{#1}}%
+  \ifnum \@itemdepth >2\relax\@toodeep\else
+    \advance\@itemdepth\@ne
+    \beamer@computepref\@itemdepth% sets \beameritemnestingprefix
+    \usebeamerfont{itemize/enumerate \beameritemnestingprefix body}%
+    \usebeamercolor[fg]{itemize/enumerate \beameritemnestingprefix body}%
+    \usebeamertemplate{itemize/enumerate \beameritemnestingprefix body begin}%
+    \list
+      {\usebeamertemplate{itemize \beameritemnestingprefix item}}
+      {\def\makelabel##1{%
+          {%
+            \hss\llap{{%
+                \usebeamerfont*{itemize \beameritemnestingprefix item}%
+                \usebeamercolor[fg]{itemize \beameritemnestingprefix item}##1}}%
+          }%
+        }%
+      }
+  \fi%
+  \beamer@cramped%
+  \justifying%
+  \beamer@firstlineitemizeunskip%
+}
+\makeatother
+\usepackage{amsmath}
+
+%----------------------------------- Setup
+\title[Intro, P. Digitais e Emulação no Proteus]{Aula 01 - SEEL 2019\\Minicurso de Arduino \\ Introdução, Portas Digitais e Emulação no Proteus}
+\author[Adriano]{Adriano Rodrigues}
+\date{23 de outubro de 2019}
+
+\definecolor{mygreen}{rgb}{0.6,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{myorange}{rgb}{0.8,0.4,0}
+\definecolor{myorange}{rgb}{0.8,0.4,0}
+\definecolor{mywhite}{rgb}{0.98,0.98,0.98}
+\definecolor{myblue}{rgb}{0,0.6,0.6}
+
+\lstdefineformat{C}
+{
+  \{=\newline\string\newline\indent,%
+%  \}=\newline\noindent\string\newline,%
+  \}=\newline\noindent\string,%
+  ;=[\ ]\string\space,%
+}
+
+\lstset{%
+  format = C,
+  backgroundcolor=\color{mywhite},
+  basicstyle=\footnotesize\ttfamily,
+  breakatwhitespace=false,
+  breaklines=true,
+  captionpos=b,
+  columns=flexible,
+  commentstyle=\color{mygray},
+  deletekeywords={...},
+  escapeinside={\%*}{*)},
+  extendedchars=true,
+  frame=shadowbox,
+  keepspaces=true,
+  keywordstyle=\color{myorange},
+  keywordstyle=[2]\color{mygreen},
+  language=C,
+  morekeywords={*,...},
+  numbers=left,
+  numbersep=4pt,
+  numberstyle=\tiny\color{black},
+  rulecolor=\color{black},
+  rulesepcolor=\color{myblue},
+  showspaces=false,
+  showstringspaces=false,          
+  showtabs=false,
+  stepnumber=1,
+  stringstyle=\color{myorange},
+  tabsize=1,
+  title=\lstname,
+  emphstyle=\bfseries\color{myblue},%  style for emph={}
+}    
+
+%% language specific settings:
+\lstdefinestyle{Arduino}{%
+    keywords={digitalWrite,delay,Serial,begin,println,print,
+    available,millis,micros,parseInt,round,analogWrite,pinMode
+    },%                 define keywords
+    keywords=[2]{if,else,for,while,setup,loop},
+    morecomment=[l]{//},%             treat // as comments
+    morecomment=[s]{/*}{*/},%         define /* ... */ comments
+    morecomment=[s]{//}{.},%         define // ... . comments
+    emph={void,int,float,unsigned,long,HIGH,OUTPUT,INPUT,LOW},%        keywords to emphasize
+}
+
+\newtoggle{InString}{}% Keep track of if we are within a string
+\togglefalse{InString}% Assume not initally in string
+
+\begin{document}
+
+%----------------------------------- Cover
+\begin{frame}
+	\titlepage
+\end{frame}
+
+%----------------------------------- Authors
+\section{Conteúdo}
+\begin{frame}
+\frametitle{Aula 01 - Conteúdo}
+	\begin{itemize}
+		\item Introdução;
+		\item Apresentação da Placa;
+		\item Aplicações;
+		\item Introdução à Interface;
+		\item Introdução à Programação;
+		\item Portas Digitais:
+		\begin{itemize}
+			\item Sa\'idas Digitais;
+			\item Entradas Digitais.
+		\end{itemize}
+		\item Emulação do Arduino no Proteus.
+	\end{itemize}
+\end{frame}
+
+%---------------------------------- Índice
+\section{Índice}
+\begin{frame}
+\frametitle{Índice}
+\begin{multicols}{2}
+\tableofcontents
+\end{multicols}
+\end{frame}
+
+%----------------------------------- O Arduino
+\section{O Arduino}
+\begin{frame}
+\frametitle{O Arduino}
+	\begin{itemize}
+		\item Site oficial: arduino.cc;
+		\item Plataforma eletrônica de código aberto baseada em hardware e software livres de fácil utilização. Foi pensado para que qualquer pessoa possa fazer seus próprios projetos interativos;
+		\item Modelos: Uno, Mega (2560, ADK), Due, Leonardo etc...
+	\end{itemize}
+\end{frame}
+
+%----------------------------------- O Arduino UNO R3
+\section{O Arduino UNO R3}
+\begin{frame}
+	\frametitle{O Arduino UNO R3}
+	\begin{itemize}
+		\item 14 portas digitais (6 podem ser configuradas PWM);
+		\item 6 entradas analógicas (10 bits);
+		\item Microcontrolador ATmega328P ($16$MHz de clock);
+		\item Opera em $5$V;
+		\item Alimentado entre $7$V-$12$V.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{O Arduino UNO R3}
+	\begin{center}
+		\pgfimage[height=180pt]{figs/figUnoR3.jpg}
+	\end{center}
+\end{frame}
+
+%----------------------------------- Exemplos
+\section{Aplicações}
+\begin{frame}
+	\frametitle{Aplicações}
+	\begin{itemize}
+	\item Robótica:
+	\end{itemize}
+	\begin{center}
+		\pgfimage[height=130pt]{figs/figRobot}
+	\end{center}
+\end{frame}
+\begin{frame}
+	\frametitle{Aplicações}
+	\begin{itemize}
+	\item Sensoriamento:
+	\end{itemize}
+	\begin{center}
+		\pgfimage[height=130pt]{figs/figSonar}
+	\end{center}
+\end{frame}
+\begin{frame}
+	\frametitle{Aplicações}
+	\begin{itemize}
+	\item Automação:
+	\end{itemize}
+	\begin{center}
+		\pgfimage[height=130pt]{figs/figApps}
+	\end{center}
+\end{frame}
+
+%----------------------------------- Introdução à Interface
+\section{Introdução à Interface}
+\begin{frame}
+	\frametitle{Introdução à Interface}
+	\begin{center}
+		\pgfimage[height=150pt]{figs/figIDE}
+	\end{center}
+	\begin{itemize}
+		\item[1] Verificar e compilar o Código;
+		\item[2] Fazer Upload do Código no Arduino;
+		\item[3] Criar Novo Sketch;
+		\item[4] Abrir outro Sketch;
+		\item[5] Salvar este Sketch;
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Introdução à Interface}
+	\begin{center}
+		\pgfimage[height=130pt]{figs/figIDE}
+	\end{center}
+	\begin{itemize}
+		\item[6]  Monitor Serial - Tela de monitoramento da serial;
+		\item[7]  Título do Sketch;
+		\item[8]  Campo do Código;
+		\item[9]  Status da Interface;
+		\item[10] Status e Avisos Relacionados ao Código;
+		\item[11] Informação de Conexão com o Arduino.
+	\end{itemize}
+\end{frame}
+
+%----------------------------------- Introdução à Programação
+\section{Introdução à Programação}
+\begin{frame}
+	\frametitle{Introdução à Programação}
+	Tipos de Vari\'aveis
+	\begin{itemize}
+		\item int - inteiros de -32768 at\'e 32767;
+		\begin{itemize}
+			\item \textit{int} x = 5;
+			\item \textit{int} x = 5, y = 4, z = 10;
+		\end{itemize}
+		\item long - inteiros de -2.147.483.648 at\'e 2.147.483.647;
+		\item float - n\'umeros reais de -3,4028235e38 at\'e 3,4028235e38;
+		\item char - caracteres (exemplo: \textit{char} 'A');
+		\item byte - binários de d0 até d255 (b10010 = d18);
+		\item boolean - \textit{false} ou \textit{true};
+		\item array:
+		\begin{itemize}
+			\item \textit{int} myInt[6]; (5 elementos + fim de curso)
+			\item \textit{int} myPins[] = \{2,4,8,3,5\};
+			\item \textit{int} mySensors[6] = \{1,4,-8,3,2\};
+			\item \textit{char} message[6] = "Hello";
+			\item Primeiro elemento é referido como ``myPins[0]'', por exemplo;
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Introdução à Programação}
+	\begin{itemize}
+		\item O B\'asico
+	\end{itemize}
+	
+	\begin{lstlisting}[style=Arduino]
+	void setup()	{
+	// Esse codigo roda somente uma vez.	}
+	void loop()	{
+	// Codigo principal que roda recursivamente. }	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Introdução à Programação}
+	\begin{itemize}
+		\item if / else if / else:
+	\end{itemize}
+	
+	\begin{lstlisting}[style=Arduino]
+	if (variavel < condicao1) {
+	// Fazer A.	}
+	else if (variavel >= condicao2)	{
+	// Fazer B.	}
+	else {
+	// Fazer C.	}	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Introdução à Programação}
+	\begin{itemize}
+		\item for:
+	\end{itemize}
+	
+	\begin{lstlisting}[style=Arduino]
+	for (inicializacao;condicao;incremento)	{
+	// Instrucoes.	}	\end{lstlisting}
+	Exemplo:
+	\begin{lstlisting}[style=Arduino]
+	for (int i = 0; i<= 255 ; i++)	{
+	 a[i] = 2*i;	}	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Introdução à Programação}
+	\begin{itemize}
+		\item while:
+	\end{itemize}
+	
+	\begin{lstlisting}[style=Arduino]
+	while(condicao)	{
+	// Comando.	}	\end{lstlisting}
+	Exemplo:
+	\begin{lstlisting}[style=Arduino]
+	int var = 0;
+	while(var<200)	{
+	var++;	}	\end{lstlisting}
+\end{frame}
+
+%--------------------------------------------------- Funções Digitais
+\section{Funções Digitais}
+\begin{frame}
+	\frametitle{Funções Digitais}
+	No \textit{\textbf{setup()}}. Definição das portas:
+	\begin{itemize}
+		\item pinMode(\textit{pino},\textit{direção});\\
+		pino = int de 0 a 13\\
+		direção = INPUT ou OUTPUT.
+	\end{itemize}
+	No \textit{\textbf{loop()}}:
+	\begin{itemize}
+		\item digitalRead(\textit{pino});\\
+		pino = int de 0 a 13\\
+		Função de \textbf{leitura}! Retorna booleano.
+		\item digitalWrite(\textit{pino}, \textit{estado});\\
+		pino = int de 0 a 13\\
+		estado = HIGH ou LOW.
+	\end{itemize}
+\end{frame}
+
+%-------------------------------------------------- Exercício 01
+\section{Exercício 1}
+\begin{frame}
+	\frametitle{Exercício 1 - Introdução à IDE - Pisca LED}
+	\begin{center}
+		\pgfimage[height=180pt]{figs/figIDE}
+	\end{center}
+	\begin{itemize}
+	
+		\item[8] Escrever o código aqui.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Exercício 1 - Introdução à IDE - Pisca LED}
+	
+	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
+	// LED piscando - Adriano Rodrigues.
+	
+	// Porta do LED.
+	int led = 13;
+	
+	void setup()	{
+	// Configuracao da porta digital do LED.
+	pinMode(led, OUTPUT);	}
+	
+	void loop()	{
+	digitalWrite(led, HIGH); // Escreve 5V na porta LED.
+	delay(2000)            ; // Espera por 2000 milissegundos.
+	digitalWrite(led, LOW) ; // Escreve 0V na porta LED.
+	delay(2000)            ; // Espera por 2000 milissegundos.	} \end{lstlisting}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Exercício 1 - Introdução à IDE - Pisca LED}
+	\begin{center}
+		\pgfimage[height=110pt]{figs/figIDE}
+	\end{center}
+	\begin{itemize}
+		\item[1] Verificar Coerência; + Salvar o código:
+		\begin{itemize}
+			\item Browser Padrão;
+			\item Não separar nomes, ou iniciar por números, ou por caracteres especiais;
+			\item Esse procedimento cria uma pasta com um arquivo \textit{.ino} com o texto da sketch.
+		\end{itemize}
+		\item[2] Fazer Upload;
+		\item[9] Barra de progresso do Upload;
+		\item[10] Verificar Status do Upload;
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Exercício 1 - Introdução à IDE - Pisca LED}
+	\begin{center}
+		\pgfimage[width=\textwidth]{figs/figEx01}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Exercício 1 - Introdução à IDE - Pisca LED}
+	\begin{center}
+		\pgfimage[width=0.8\textwidth]{figs/figLED}
+	\end{center}
+\end{frame}
+
+%------------------------------------------------ Exercício 2.0
+\section{Exercício 2}
+\begin{frame}
+	\frametitle{Exercício 2 - Esquemático}
+	\begin{center}
+		\pgfimage[width=\textwidth]{figs/figEx02}
+	\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Exercício 2.0 - Botão de Comando}
+	
+	\begin{lstlisting}[style=Arduino]
+// LED com if (botao) - Adriano Rodrigues.
+int led   = 13; // Porta do LED.
+int botao = 12; // Porta do Botao.
+void setup() {
+pinMode(led, OUTPUT) ;// Configuracao da porta digital do LED.
+pinMode(botao, INPUT);// Configuracao da porta digital do BOTAO.}
+void loop() {
+if (digitalRead(botao) == HIGH){
+digitalWrite(led, HIGH);// Escreve 5V na porta LED.}
+else // ou 'else if (digitalRead(botao) == LOW)'. {
+digitalWrite(led, LOW); // Escreve 0V na porta LED. } } 	\end{lstlisting}
+\end{frame}
+
+%-------------------------------------------- Exercício 2.1
+\begin{frame}[fragile]
+	\frametitle{Exercício 2.1 - Botão de Comando - Simplificado}
+	
+	\begin{lstlisting}[style=Arduino]
+// LED com if (botao) - Adriano Rodrigues.
+int led = 13, botao = 12;// Porta do LED - Porta do botao.
+void setup(){
+pinMode(led, OUTPUT); pinMode(botao, INPUT);// Configurar PDs. }
+void loop() {
+if (digitalRead(botao) == HIGH)
+digitalWrite(led, HIGH);// Escreve 5V na porta LED.
+else
+digitalWrite(led, LOW);// Escreve 0V na porta LED. }	\end{lstlisting}
+\end{frame}
+
+%-------------------------------------------- Exercício 2.2
+\begin{frame}[fragile]
+	\frametitle{Exercício 2.2 - Botão de Comando - Simplificado Menor}
+	
+	\begin{lstlisting}[style=Arduino]
+// LED com if (botao) - Adriano Rodrigues.
+int led = 13, botao = 12;// Porta do LED - Porta do botao.
+void setup(){
+pinMode(led, OUTPUT); pinMode(botao, INPUT);// Configurar PDs. }
+void loop() {
+if (digitalRead(botao) == HIGH) digitalWrite(led, HIGH);
+else digitalWrite(led, LOW); }	\end{lstlisting}
+\end{frame}
+\begin{frame}
+	\frametitle{Exercício 2 - Botão de Comando}
+	\begin{center}
+		\pgfimage[width=\textwidth]{figs/figEx02}
+	\end{center}
+\end{frame}
+
+%---------------------------------------------- Introdução ao Proteus
+\section{Introdução ao Proteus}
+\begin{frame}
+	\frametitle{Introdução ao Proteus}
+	\begin{center}
+		\pgfimage[height=50pt]{figs/figProtIcon} \hspace{50pt}
+		\pgfimage[height=50pt]{figs/figIsis}
+	\end{center}
+	Programa que auxilia na simulação de circuitos e componentes elétricos integrados.\\[5pt]
+	\begin{itemize}
+	\item Simular o Arduino no esquemático do Proteus Isis.
+	\end{itemize}
+	\begin{center}
+		\pgfimage[height=50pt]{figs/figIsisAres}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Introdução ao Proteus}
+	\begin{itemize}
+	\item Inserir Componentes:
+		\begin{itemize}
+		\item (Barra de Tarefas) Library $>$ Pick parts from libraries.
+		\item (Ícones) Amplificador Operacional Dourado $>$ P.\\
+		\pgfimage[height=170pt]{figs/figComponet} \hspace{50pt}
+		\pgfimage[height=90pt]{figs/figPlace}
+		\item (Atalho de teclado) P.
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Introdução ao Proteus}
+	\begin{itemize}
+	\item Inserir Componentes:
+		\begin{itemize}
+		\item Arduino (ARDUINO UNO R3);
+		\end{itemize}
+	\end{itemize}
+	\begin{center}
+		\pgfimage[width=0.85\textwidth]{figs/figPlaceArduino} \hspace{50pt}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Introdução ao Proteus}
+	\begin{itemize}
+	\item Inserir Componentes:
+		\begin{itemize}
+		\item Arduino (ARDUINO UNO R3);
+		\item Resistor (RES);
+		\item Chave (SWITCH);
+		\item Led (LED-GREEN, LED-RED, LED-BLUE, LED-YELLOW);
+		\item Capacitor (CAP);
+		\item Motor DC (MOTOR);
+		\item etc...
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Introdução ao Proteus}
+	\begin{itemize}
+	\item Inserir Alimentação:
+		\begin{itemize}
+		\item 5V (VCC)
+		\item 0V (GND)
+		\end{itemize}
+	\end{itemize}
+		\pgfimage[height=0.70\textheight]{figs/figVccGnd}
+\end{frame}
+
+%----------------------------------------------- Exercício 2
+\section{Exercício 2 - Proteus}
+\begin{frame}
+	\frametitle{Exercício 2 - Botão de Comando}
+	\begin{center}
+		\pgfimage[width=\textwidth]{figs/figEx02}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Exercício 2 - Programar Arduino do Proteus}
+	Copiar:
+	\begin{center}
+		\pgfimage[width=0.7\textwidth]{figs/figHex}
+	\end{center}
+	Clicar duas vezes no Arduino (Proteus), Colar:
+	\begin{center}
+		\pgfimage[width=0.7\textwidth]{figs/figPasteHex}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Exercício 2 - Programar Arduino do Proteus}
+	Play:
+	\begin{center}
+		\pgfimage[width=0.7\textwidth]{figs/figPlay}
+	\end{center}
+\end{frame}
+
+%---------------------------------------------- Tarefa 1
+\section{Tarefa 1}
+\begin{frame}[fragile]
+	\frametitle{Tarefa 1 - Semáforo no Proteus}
+	\begin{itemize}
+	\item Criar um código que acenda três LEDs que simulem o funcionamento de um semáforo;
+	\item Verificar o funcionamento do código no Proteus.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Tarefa 1 - Semáforo no Proteus}
+	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
+// Semaforo - Proteus 8 - Adriano Rodrigues.
+int LEDg = 11, LEDy = 12, LEDr = 13;
+void setup() {
+pinMode(LEDg,OUTPUT); pinMode(LEDy,OUTPUT); pinMode(LEDr,OUTPUT);
+// Inicia os tres LEDs apagados.
+digitalWrite(LEDg,LOW); digitalWrite(LEDy,LOW); digitalWrite(LEDr,LOW); }
+void loop() {
+// Acende o verde por 5s, depois apaga.
+digitalWrite(LEDg,HIGH); delay(5000); digitalWrite(LEDg,LOW);
+// Acende o amarelo por 1s, depois apaga.
+digitalWrite(LEDy,HIGH); delay(1000); digitalWrite(LEDy,LOW);
+// Acende o vermelho por 5s, depois apaga.
+digitalWrite(LEDr,HIGH); delay(5000); digitalWrite(LEDr,LOW); } \end{lstlisting}
+\end{frame}
+
+%------------------------------------------------ Exercício 3
+\section{Exercício 3}
+\begin{frame}[fragile]
+	\frametitle{Exercício 3 - Frequência Modificada}
+	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
+// LED e laco for - Adriano Rodrigues.
+
+// Porta do LED.
+int led = 13;
+
+void setup(){
+// Configuracao da porta digital do LED.
+pinMode(led, OUTPUT); }
+
+void loop() {
+for (int i = 0;  i < 5; i++) {
+digitalWrite(led, HIGH); // Escreve 5V na porta LED.
+delay(100*i)           ; // Espera por 100*i milissegundos.
+digitalWrite(led, LOW) ; // Escreve 0V na porta LED.
+delay(100*i)           ; // Espera por 100*i milissegundos. } } \end{lstlisting}
+\end{frame}
+
+%--------------------------------------------- Tarefa 2
+\section{Tarefa 2}
+\begin{frame}[fragile]
+	\frametitle{Tarefa 2 - Frequência Modificada}
+	Aumentar o tempo em que cada frequência é apresentada.\\[10pt]
+	Cada frequência estava sendo exibida por apenas um período. Propõe-se que cada frequência seja mostrada por uma quantidade maior de períodos, como por exemplo 5 períodos.
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Tarefa 2 - Frequência Modificada}
+	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
+// LED e laco for - Adriano Rodrigues.
+
+void loop() {
+for (int i = 0;  i < 5; i++) {
+for (int j = 0;  j < 5; j++) {
+digitalWrite(led, HIGH); // Escreve 5V na porta LED.
+delay(100*i)           ; // Espera por 100*i milissegundos.
+digitalWrite(led, LOW) ; // Escreve 0V na porta LED.
+delay(100*i)           ; // Espera por 100*i milissegundos. } } } \end{lstlisting}
+\end{frame}
+
+%-------------------------------------------------- Sugestão 1
+\section{Sugestão 1}
+\begin{frame}[fragile]
+	\frametitle{Sugestão 1 - 2x Semáforos de um cruzamento}
+	\begin{itemize}
+	\item Criar um código simule a operação de dois semáforos perpendiculares de um cruzamento;
+	\item Verificar o funcionamento no Proteus.
+	\end{itemize}
+\end{frame}
+
+\section{Fim!}
+%----------------------------------- Discussion
+\begin{frame}
+	\frametitle{Até a próxima aula!}
+	\titlepage
+\end{frame}
+
+%\begin{frame}[fragile]
+%\frametitle{Extras}
+%\begin{lstlisting}[style=Arduino]
+%// Relogio, Modo menos eficiente, Com delay - Adriano Rodrigues
+%float segundos = 0;
+%int minutos = 0;
+%void setup()
+%{
+%Serial.begin(9600);
+%}
+%void loop()
+%{
+%segundos = millis()-minutos*60000; // Desconta os minutos passados
+%segundos = round(segundos/1000); // Arredonda a divisao
+%Serial.print(minutos); // Impressao dos minutos e segundos
+%Serial.print(':');
+%Serial.println(segundos,0);
+%if(segundos==59) // Quando chegar em 59, incrementar os minutos
+%{
+%minutos++;
+%}
+%delay(1000);
+%}
+%\end{lstlisting}
+%\end{frame}
+%
+%\begin{frame}[fragile]
+%\frametitle{Extras}
+%\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
+%// Relogio, Modo mais eficiente, Sem delay - Adriano Rodrigues
+%int segundos = 0, minutos = 0;
+%unsigned long timer = 0; // Nao contabilizar negativos
+%void setup()
+%{
+%Serial.begin(9600);
+%}
+%void loop()
+%{
+%if (millis()-timer>1000UL) // A cada um segundo (diferenca entre millis e timer), executa:
+%{
+%timer = millis(); // Faz timer acompanhar o millis.
+%Serial.print(minutos);Serial.print(':');Serial.println(segundos);
+%segundos++;
+%if(segundos == 60) // Zera os segundos e incrementa os minutos.
+%{
+%segundos = 0;
+%minutos++;
+%}
+%}
+%}
+%\end{lstlisting}
+%\end{frame}
+	
+\end{document}
