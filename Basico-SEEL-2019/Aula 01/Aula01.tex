@@ -95,14 +95,14 @@
   rulecolor=\color{black},
   rulesepcolor=\color{myblue},
   showspaces=false,
-  showstringspaces=false,          
+  showstringspaces=false,
   showtabs=false,
   stepnumber=1,
   stringstyle=\color{myorange},
   tabsize=1,
   title=\lstname,
   emphstyle=\bfseries\color{myblue},%  style for emph={}
-}    
+}
 
 %% language specific settings:
 \lstdefinestyle{Arduino}{%
@@ -172,9 +172,9 @@
 	\begin{itemize}
 		\item 14 portas digitais (6 podem ser configuradas PWM);
 		\item 6 entradas analógicas (10 bits);
-		\item Microcontrolador ATmega328P ($16$MHz de clock);
-		\item Opera em $5$V;
-		\item Alimentado entre $7$V-$12$V.
+		\item Microcontrolador ATmega328P ($16$ MHz de clock);
+		\item Opera em $5$ V;
+		\item Alimentado entre $7$-$12$ V.
 	\end{itemize}
 \end{frame}
 
@@ -193,9 +193,30 @@
 	\item Robótica:
 	\end{itemize}
 	\begin{center}
+		\pgfimage[height=130pt]{figs/figArm}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Aplicações}
+	\begin{itemize}
+	\item Robótica:
+	\end{itemize}
+	\begin{center}
 		\pgfimage[height=130pt]{figs/figRobot}
 	\end{center}
 \end{frame}
+
+\begin{frame}
+	\frametitle{Aplicações}
+	\begin{itemize}
+	\item Robótica:
+	\end{itemize}
+	\begin{center}
+		\pgfimage[height=130pt]{figs/figRubik}
+	\end{center}
+\end{frame}
+
 \begin{frame}
 	\frametitle{Aplicações}
 	\begin{itemize}
@@ -205,6 +226,27 @@
 		\pgfimage[height=130pt]{figs/figSonar}
 	\end{center}
 \end{frame}
+
+\begin{frame}
+	\frametitle{Aplicações}
+	\begin{itemize}
+	\item Sensoriamento:
+	\end{itemize}
+	\begin{center}
+		\pgfimage[height=130pt]{figs/figMeteo}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Aplicações}
+	\begin{itemize}
+	\item Sensoriamento:
+	\end{itemize}
+	\begin{center}
+		\pgfimage[height=130pt]{figs/figRFID}
+	\end{center}
+\end{frame}
+
 \begin{frame}
 	\frametitle{Aplicações}
 	\begin{itemize}
@@ -212,6 +254,26 @@
 	\end{itemize}
 	\begin{center}
 		\pgfimage[height=130pt]{figs/figApps}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Aplicações}
+	\begin{itemize}
+	\item Automação:
+	\end{itemize}
+	\begin{center}
+		\pgfimage[height=130pt]{figs/figHome}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Aplicações}
+	\begin{itemize}
+	\item Automação:
+	\end{itemize}
+	\begin{center}
+		\pgfimage[height=130pt]{figs/figGarden}
 	\end{center}
 \end{frame}
 
@@ -252,15 +314,15 @@
 	\frametitle{Introdução à Programação}
 	Tipos de Vari\'aveis
 	\begin{itemize}
-		\item int - inteiros de -32768 at\'e 32767;
+		\item int - inteiros de $-32768$ at\'e $32767$;
 		\begin{itemize}
 			\item \textit{int} x = 5;
 			\item \textit{int} x = 5, y = 4, z = 10;
 		\end{itemize}
-		\item long - inteiros de -2.147.483.648 at\'e 2.147.483.647;
-		\item float - n\'umeros reais de -3,4028235e38 at\'e 3,4028235e38;
+		\item long - inteiros de $-2.147.483.648$ at\'e $2.147.483.647$;
+		\item float - n\'umeros reais de $-3,4028235\cdot10^{38}$ at\'e $3,4028235\cdot10^{38}$;
 		\item char - caracteres (exemplo: \textit{char} 'A');
-		\item byte - binários de d0 até d255 (b10010 = d18);
+		\item byte - binários de $_d0$ até $_d255$ ($_b10010$ = $_d18$);
 		\item boolean - \textit{false} ou \textit{true};
 		\item array:
 		\begin{itemize}
@@ -278,7 +340,7 @@
 	\begin{itemize}
 		\item O B\'asico
 	\end{itemize}
-	
+
 	\begin{lstlisting}[style=Arduino]
 	void setup()	{
 	// Esse codigo roda somente uma vez.	}
@@ -291,7 +353,7 @@
 	\begin{itemize}
 		\item if / else if / else:
 	\end{itemize}
-	
+
 	\begin{lstlisting}[style=Arduino]
 	if (variavel < condicao1) {
 	// Fazer A.	}
@@ -306,13 +368,13 @@
 	\begin{itemize}
 		\item for:
 	\end{itemize}
-	
+
 	\begin{lstlisting}[style=Arduino]
 	for (inicializacao;condicao;incremento)	{
 	// Instrucoes.	}	\end{lstlisting}
 	Exemplo:
 	\begin{lstlisting}[style=Arduino]
-	for (int i = 0; i<= 255 ; i++)	{
+	for (int i = 0; i <= 255 ; i++)	{
 	 a[i] = 2*i;	}	\end{lstlisting}
 \end{frame}
 
@@ -321,14 +383,14 @@
 	\begin{itemize}
 		\item while:
 	\end{itemize}
-	
+
 	\begin{lstlisting}[style=Arduino]
 	while(condicao)	{
 	// Comando.	}	\end{lstlisting}
 	Exemplo:
 	\begin{lstlisting}[style=Arduino]
 	int var = 0;
-	while(var<200)	{
+	while(var < 200)	{
 	var++;	}	\end{lstlisting}
 \end{frame}
 
@@ -361,24 +423,24 @@
 		\pgfimage[height=180pt]{figs/figIDE}
 	\end{center}
 	\begin{itemize}
-	
+
 		\item[8] Escrever o código aqui.
 	\end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
 	\frametitle{Exercício 1 - Introdução à IDE - Pisca LED}
-	
+
 	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
 	// LED piscando - Adriano Rodrigues.
-	
+
 	// Porta do LED.
 	int led = 13;
-	
+
 	void setup()	{
 	// Configuracao da porta digital do LED.
 	pinMode(led, OUTPUT);	}
-	
+
 	void loop()	{
 	digitalWrite(led, HIGH); // Escreve 5V na porta LED.
 	delay(2000)            ; // Espera por 2000 milissegundos.
@@ -394,9 +456,9 @@
 	\begin{itemize}
 		\item[1] Verificar Coerência; + Salvar o código:
 		\begin{itemize}
-			\item Browser Padrão;
+			\item Abre o browser padrão para novos códigos;
 			\item Não separar nomes, ou iniciar por números, ou por caracteres especiais;
-			\item Esse procedimento cria uma pasta com um arquivo \textit{.ino} com o texto da sketch.
+			\item Esse procedimento cria uma pasta com um arquivo \textit{.ino} com o texto do sketch.
 		\end{itemize}
 		\item[2] Fazer Upload;
 		\item[9] Barra de progresso do Upload;
@@ -429,7 +491,7 @@
 
 \begin{frame}[fragile]
 	\frametitle{Exercício 2.0 - Botão de Comando}
-	
+
 	\begin{lstlisting}[style=Arduino]
 // LED com if (botao) - Adriano Rodrigues.
 int led   = 13; // Porta do LED.
@@ -447,7 +509,7 @@ digitalWrite(led, LOW); // Escreve 0V na porta LED. } } 	\end{lstlisting}
 %-------------------------------------------- Exercício 2.1
 \begin{frame}[fragile]
 	\frametitle{Exercício 2.1 - Botão de Comando - Simplificado}
-	
+
 	\begin{lstlisting}[style=Arduino]
 // LED com if (botao) - Adriano Rodrigues.
 int led = 13, botao = 12;// Porta do LED - Porta do botao.
@@ -463,7 +525,7 @@ digitalWrite(led, LOW);// Escreve 0V na porta LED. }	\end{lstlisting}
 %-------------------------------------------- Exercício 2.2
 \begin{frame}[fragile]
 	\frametitle{Exercício 2.2 - Botão de Comando - Simplificado Menor}
-	
+
 	\begin{lstlisting}[style=Arduino]
 // LED com if (botao) - Adriano Rodrigues.
 int led = 13, botao = 12;// Porta do LED - Porta do botao.
@@ -635,8 +697,9 @@ delay(100*i)           ; // Espera por 100*i milissegundos. } } \end{lstlisting}
 \section{Tarefa 2}
 \begin{frame}[fragile]
 	\frametitle{Tarefa 2 - Frequência Modificada}
-	Aumentar o tempo em que cada frequência é apresentada.\\[10pt]
-	Cada frequência estava sendo exibida por apenas um período. Propõe-se que cada frequência seja mostrada por uma quantidade maior de períodos, como por exemplo 5 períodos.
+	Aumentar o tempo em que cada ciclo é apresentado.\\[10pt]
+	Cada ciclo estava sendo exibido apenas uma vez por loop. Propõe-se que cada ciclo seja mostrado por uma quantidade maior de períodos antes de ser alterado.\\[10pt]
+	Faça o ajuste para que cada ciclo apareça por 5 períodos antes de ser atualizado.
 \end{frame}
 
 \begin{frame}[fragile]
@@ -670,57 +733,4 @@ delay(100*i)           ; // Espera por 100*i milissegundos. } } } \end{lstlistin
 	\titlepage
 \end{frame}
 
-%\begin{frame}[fragile]
-%\frametitle{Extras}
-%\begin{lstlisting}[style=Arduino]
-%// Relogio, Modo menos eficiente, Com delay - Adriano Rodrigues
-%float segundos = 0;
-%int minutos = 0;
-%void setup()
-%{
-%Serial.begin(9600);
-%}
-%void loop()
-%{
-%segundos = millis()-minutos*60000; // Desconta os minutos passados
-%segundos = round(segundos/1000); // Arredonda a divisao
-%Serial.print(minutos); // Impressao dos minutos e segundos
-%Serial.print(':');
-%Serial.println(segundos,0);
-%if(segundos==59) // Quando chegar em 59, incrementar os minutos
-%{
-%minutos++;
-%}
-%delay(1000);
-%}
-%\end{lstlisting}
-%\end{frame}
-%
-%\begin{frame}[fragile]
-%\frametitle{Extras}
-%\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
-%// Relogio, Modo mais eficiente, Sem delay - Adriano Rodrigues
-%int segundos = 0, minutos = 0;
-%unsigned long timer = 0; // Nao contabilizar negativos
-%void setup()
-%{
-%Serial.begin(9600);
-%}
-%void loop()
-%{
-%if (millis()-timer>1000UL) // A cada um segundo (diferenca entre millis e timer), executa:
-%{
-%timer = millis(); // Faz timer acompanhar o millis.
-%Serial.print(minutos);Serial.print(':');Serial.println(segundos);
-%segundos++;
-%if(segundos == 60) // Zera os segundos e incrementa os minutos.
-%{
-%segundos = 0;
-%minutos++;
-%}
-%}
-%}
-%\end{lstlisting}
-%\end{frame}
-	
 \end{document}
