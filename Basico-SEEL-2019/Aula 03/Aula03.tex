@@ -50,7 +50,7 @@
 \usepackage{amsmath}
 
 %----------------------------------- Setup
-\title[Funções, Temporizadores e Sensor IR]{Aula 03 - SEEL 2019 \\Minicurso de Arduino \\Funções, Temporizadores e Sensor Infravermelho}
+\title[Funções, Temporizadores e Sensor IR]{Aula 03 - SEEL 2019 \\Minicurso de Arduino \\Funções, Temporizadores}
 \author[Adriano]{Adriano Rodrigues}
 \date{25 de outubro de 2019}
 
@@ -93,14 +93,14 @@
   rulecolor=\color{black},
   rulesepcolor=\color{myblue},
   showspaces=false,
-  showstringspaces=false,          
+  showstringspaces=false,
   showtabs=false,
   stepnumber=1,
   stringstyle=\color{myblue},
   tabsize=1,
   title=\lstname,
   emphstyle=\bfseries\color{myblue},%  style for emph={}
-}    
+}
 
 %% language specific settings:
 \lstdefinestyle{Arduino}{%
@@ -132,10 +132,6 @@
 		\item Funções;
 		\item Declarações const e  \#define;
 		\item Temporizadores;
-		\item Sensor IR:
-		\begin{itemize}
-		\item Calibraç\~ao do Sensor IR.
-		\end{itemize}
 	\end{itemize}
 \end{frame}
 
@@ -170,6 +166,14 @@ E[i] = !E[i];            // Alterna o valor do estado.
 digitalWrite(LED, E[i]); // Escreve no LED.
 }
 \end{lstlisting}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Montagem do LED}
+	\begin{center}
+		\pgfimage[width=0.4\textwidth]{figs/figLED}
+		\pgfimage[width=0.6\textwidth]{figs/figLED13}
+	\end{center}
 \end{frame}
 
 \begin{frame}
@@ -316,144 +320,10 @@ timer1 = millis();    piscar(LED1, 1); // Pisca o LEL um.
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}
-	\frametitle{Sensor de Infravermelho}
-	\begin{center}
-		\pgfimage[height=80pt]{figs/figSlh01.jpg}
-		\pgfimage[height=80pt]{figs/figSlh02.jpg}
-		\pgfimage[height=80pt]{figs/figSlh03.jpeg}
-	\end{center}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Sensor de Infravermelho}
-	\begin{center}
-		\pgfimage[height=80pt]{figs/figDslh01.jpg}\\[20pt]
-		\pgfimage[height=80pt]{figs/figDslh02.png}
-	\end{center}
-	Ligar o terra do receptor na porta digital!
-\end{frame}
-
-\begin{frame}[fragile]
-	\frametitle{Exercício 2 - Sensor Infravermelho}
-	
-	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
-// Infrared basico - Adriano Rodrigues.
-#define temp 100
-int led = 13, port_sinal = 2; // Porta do LED e do SINAL.
-boolean sinal = false       ; // Registrador do SINAL.
-unsigned long timer         ;
-
-void setup()
-{
-pinMode(led, OUTPUT)      ; // Configura porta digital do LED.
-pinMode(port_sinal, INPUT); // Configura porta digital do SINAL.
-}
-
-void loop()
-{
-if (millis() - timer >= temp)
-{
-timer = millis()               ; // Atualiza timer.
-sinal = digitalRead(port_sinal); // Le o SINAL.
-digitalWrite(led, sinal)       ; // Escreve na porta LED.
-}
-}
-\end{lstlisting}
-\end{frame}
-
-\begin{frame}[fragile]
-	\frametitle{Exercicio 3 - IR + analogRead + Serial}
-	\begin{lstlisting}[style=Arduino]
-// IR + analogRead + Serial - Adriano Rodrigues.
-#define temp 100
-int Leitura;
-unsigned long timer;
-
-void setup()
-{
-Serial.begin(9600);
-}
-void loop()
-{
-if (millis() - timer >= temp)
-{
-timer = millis()        ;
-Leitura = analogRead(A0);
-Serial.println(Leitura) ;
-}
-}
-\end{lstlisting}
-\end{frame}
-
-\begin{frame}[fragile]
-	\frametitle{Tarefa 2 - Calibragem do IR}
-	\begin{itemize}
-	\item Exibir o valores analógicos do infravermelho pela serial;
-	\item Encontrar faixa de corte (sensibilidade) de cada sensor.
-	\end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-	\frametitle{Tarefa 2 - Calibragem do IR}
-	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
-// Calibragem do IR - Adriano Rodrigues.
-#define temp 100
-int  corte, Le     ; // Corte e leitura.
-char char_Le = 'B' ; // Indicador de Branco ou Preto.
-unsigned long timer;
-void setup()
-{
-Serial.begin(9600);
-}
-void loop()
-{
-if (millis() - timer >= temp)
-{
-timer = millis();
-Le = analogRead(A0); Serial.print(Le); // Recebe e imprime leitura
-// Le e imprime corte.
-corte = analogRead(A2); Serial.print('\t'); Serial.print(corte);
-if (Le > corte) char_Le = 'B'; // Branco se Le>corte.
-else char_Le = 'P'           ; // Preto caso contrario.
-Serial.print('\t'); Serial.println(char_Le);
-}
-}
-\end{lstlisting}
-\end{frame}
-
-\begin{frame}[fragile]
-	\frametitle{Tarefa 2.2 - Calibragem do IR}
-	\begin{lstlisting}[style=Arduino,basicstyle=\scriptsize \ttfamily]
-#define temp = 100
-int  corte, Le; char char_Le = 'B'; unsigned long timer;
-void setup()
-{
-Serial.begin(9600);
-}
-void loop()
-{
-if (millis() - timer >= temp)
-{
-timer = millis();
-Le = analogRead(A0); corte = analogRead(A2); // Recebe leitura e corte.
-if (Le > corte) char_Le = 'B'; // Branco se leitura>corte.
-else char_Le = 'P'           ; // Preto caso contrario.
-imprimir(Le, corte, char_Le) ; // Chama impressao.
-}
-}
-void imprimir(int l, int c, char cl)
-{
-Serial.print(l); Serial.print('\t'); Serial.print(c);
-Serial.print('\t'); Serial.println(cl);
-}
-\end{lstlisting}
-\end{frame}
-
 %----------------------------------- Discussion
 \begin{frame}
 	\frametitle{Obrigado pela Participação.}
 	\titlepage
 \end{frame}
-	
+
 \end{document}
