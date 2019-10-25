@@ -184,7 +184,7 @@ digitalWrite(LED, E[i]); // Escreve no LED.
 		\item \#define LEDpin 13 \\[5pt]
 		Nesse caso interface é a responsável por buscar todas as ocorrências da palavra \textit{LEDpin} e subtituí-la pelo valor 13. Ou seja, quando o programador escreve \textit{LEDpin}, o programa entenderá como $13$.
 		\item byte const LEDpin = 13; \\[5pt]
-		Dessa forma, você armazena o número 13 na memória do Arduino, porém em apenas 8-bits ao invés de 16-bits. Por ser constante, o compilador acusará erro caso o programador tente eneganadamente modificar o seu valor.
+		Dessa forma, você armazena o número 13 na memória do Arduino, porém em apenas 8-bits ao invés de 16-bits. Por ser constante, o compilador acusará erro caso o programador tente enganadamente modificar o seu valor.
 	\end{itemize}
 \end{frame}
 
@@ -304,7 +304,7 @@ unsigned long timer0, timer1;
 boolean E[2]; // Vetor de estados - Variavel GLOBAL.
 void setup() // Dispensa comentarios.
 {
-Serial.begin (9600); pinMode(LED0, OUTPUT); pinMode(LED1, OUTPUT);
+pinMode(LED0, OUTPUT); pinMode(LED1, OUTPUT);
 }
 void loop()
 {
